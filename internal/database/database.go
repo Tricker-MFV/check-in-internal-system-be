@@ -29,6 +29,12 @@ func Open() *sqlx.DB {
 		// another initialization error.
 		log.Fatal(err)
 	}
+
+	// Verify the connection
+	if err := db.Ping(); err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
 	db.SetConnMaxLifetime(0)
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
