@@ -13,7 +13,7 @@ func NewEmployeeHandler(employeeService service.EmployeeService) *EmployeeHandle
 	return &EmployeeHandler{employeeService: employeeService}
 }
 
-// @BasePath /api
+// @BasePath /api/123
 // @Summary Get all employees
 // @Description Get all employees
 // @Tags Employee

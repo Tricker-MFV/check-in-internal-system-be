@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var (
@@ -18,26 +18,28 @@ var (
 	host     = os.Getenv("DB_HOST")
 )
 
-type Db *sqlx.DB
+type Db *gorm.DB
 
-func Open() *sqlx.DB {
-	// Opening a driver typically will not attempt to connect to the database.
-	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname))
+func Open() *gorm.DB {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		host, username, password, dbname, port)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		// This will not be a connection error, but a DSN parse error or
-		// another initialization error.
-		log.Fatal(err)
-	}
-
-	// Verify the connection
-	if err := db.Ping(); err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	db.SetConnMaxLifetime(0)
-	db.SetMaxIdleConns(50)
-	db.SetMaxOpenConns(50)
+	// Get generic database object sql.DB to use its functions
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal("Failed to get database instance:", err)
+	}
+
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+	sqlDB.SetMaxIdleConns(10)
+
+	// SetMaxOpenConns sets the maximum number of open connections to the database.
+	sqlDB.SetMaxOpenConns(100)
 
 	return db
 }

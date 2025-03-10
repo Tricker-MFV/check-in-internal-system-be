@@ -6,11 +6,11 @@ import (
 	"github.com/Tricker-MFV/checkin-internal-system/internal/database"
 	"github.com/Tricker-MFV/checkin-internal-system/internal/domain/entity"
 	"github.com/Tricker-MFV/checkin-internal-system/internal/repository"
-	"github.com/jmoiron/sqlx"
+	"gorm.io/gorm"
 )
 
 type EmployeeRepository struct {
-	db *sqlx.DB
+	db *gorm.DB
 }
 
 func NewEmployeeRepository(db database.Db) repository.EmployeeRepository {
@@ -19,9 +19,8 @@ func NewEmployeeRepository(db database.Db) repository.EmployeeRepository {
 
 func (repo EmployeeRepository) GetAllQuery(ctx context.Context) []entity.Employee {
 	var employees []entity.Employee
-	query := "SELECT * FROM employees"
-	err := repo.db.SelectContext(ctx, &employees, query)
-	if err != nil {
+	result := repo.db.WithContext(ctx).Find(&employees)
+	if result.Error != nil {
 		return nil
 	}
 
