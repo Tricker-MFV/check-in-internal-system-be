@@ -12,3 +12,16 @@ http://localhost:PORT/swagger/index.html
 ```bash
 $ make wire
 ```
+
+```
+PORT=
+
+DB_HOST=
+DB_PORT=
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+```
